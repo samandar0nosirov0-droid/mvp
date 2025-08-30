@@ -1,0 +1,104 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  user
+  admin_registered
+  admin_full
+}
+
+enum AccountKind {
+  anon
+  regular
+}
+
+enum MessageRole {
+  user
+  assistant
+}
+
+enum FeedbackValue {
+  helpful
+  unhelpful
+  unclear
+}
+
+model User {
+  id               String       @id @default(cuid())
+  account_kind     AccountKind
+  username         String       @unique
+  email            String?      @unique
+  phone            String?      @unique
+  password_hash    String
+  secret_word_hash String?
+  role             Role         @default(user)
+  locale           String
+  created_at       DateTime     @default(now())
+  conversations    Conversation[]
+  messages         Message[]
+
+  @@index([role], name: "idx_users_role")
+}
+
+model Conversation {
+  id          String       @id @default(cuid())
+  user        User         @relation(fields: [userId], references: [id])
+  userId      String
+  title       String
+  share_slug  String?
+  created_at  DateTime     @default(now())
+  messages    Message[]
+  exports     Export[]
+
+  @@index([userId], name: "idx_conversations_user_id")
+}
+
+model Message {
+  id             String       @id @default(cuid())
+  conversation   Conversation @relation(fields: [conversationId], references: [id])
+  conversationId String
+  role           MessageRole
+  content        String
+  tokens         Int
+  trace_id       String?
+  created_at     DateTime     @default(now())
+  feedback       Feedback?
+  exports        Export[]
+
+  @@index([conversationId], name: "idx_messages_conversation_id")
+}
+
+model Feedback {
+  id         String       @id @default(cuid())
+  message    Message      @relation(fields: [messageId], references: [id])
+  messageId  String       @unique
+  value      FeedbackValue
+  created_at DateTime     @default(now())
+}
+
+model Export {
+  id             String        @id @default(cuid())
+  conversation   Conversation? @relation(fields: [conversationId], references: [id])
+  conversationId String?
+  message        Message?      @relation(fields: [messageId], references: [id])
+  messageId      String?
+  format         String
+  file_key       String
+  created_at     DateTime      @default(now())
+}
+
+model AuditLog {
+  id          String   @id @default(cuid())
+  actor       String
+  action      String
+  entity_type String
+  entity_id   String
+  meta        Json?
+  created_at  DateTime @default(now())
+}

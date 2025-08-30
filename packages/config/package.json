@@ -1,0 +1,11 @@
+{
+  "name": "@aidvokat/config",
+  "version": "0.1.0",
+  "private": true,
+  "files": [
+    "tsconfig.base.json",
+    "eslint.config.mjs",
+    "prettier.config.cjs",
+    "commitlint.config.cjs"
+  ]
+}

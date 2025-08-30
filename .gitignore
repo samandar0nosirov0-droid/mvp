@@ -1,0 +1,12 @@
+node_modules
+.dist
+.env
+.env.*
+dist
+build
+coverage
+pnpm-lock.yaml
+.next
+*.log
+prisma/dev.db
+.turbo

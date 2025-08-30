@@ -1,0 +1,27 @@
+{
+  "name": "aidvokat",
+  "private": true,
+  "packageManager": "pnpm@8.15.6",
+  "scripts": {
+    "build": "turbo build",
+    "dev": "turbo dev",
+    "lint": "turbo lint",
+    "typecheck": "turbo typecheck",
+    "test": "turbo test",
+    "postinstall": "echo skip prisma generate",
+    "prepare": "husky install",
+    "db:migrate": "pnpm --filter @aidvokat/api prisma migrate deploy",
+    "db:migrate:dev": "pnpm --filter @aidvokat/api prisma migrate dev",
+    "db:reset": "pnpm --filter @aidvokat/api prisma migrate reset --force"
+  },
+  "devDependencies": {
+    "turbo": "^1.11.3",
+    "husky": "^8.0.3",
+    "@commitlint/cli": "^17.7.2",
+    "@commitlint/config-conventional": "^17.7.0",
+    "@typescript-eslint/eslint-plugin": "^6.7.2",
+    "@typescript-eslint/parser": "^6.7.2",
+    "eslint-config-prettier": "^9.1.0",
+    "@eslint/js": "^8.57.1"
+  }
+}

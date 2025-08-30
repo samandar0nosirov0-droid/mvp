@@ -1,0 +1,25 @@
+{
+  "name": "@aidvokat/contracts",
+  "version": "0.1.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "test": "vitest run",
+    "gen:openapi": "tsx src/openapi.ts"
+  },
+  "dependencies": {
+    "@asteasolutions/zod-to-openapi": "^6.0.0",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@aidvokat/config": "workspace:*",
+    "typescript": "^5.2.2",
+    "tsx": "^4.7.0",
+    "eslint": "^8.50.0",
+    "vitest": "^0.34.6",
+    "@types/node": "^20.8.0"
+  }
+}
