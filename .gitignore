@@ -1,0 +1,17 @@
+/node_modules
+.env
+.env.*
+.dist
+.next
+coverage
+artifacts
+.DS_Store
+prisma/migrations
+apps/api/node_modules
+apps/web/node_modules
+packages/contracts/node_modules
+packages/config/node_modules
+apps/api/dist
+apps/web/.next
+apps/web/out
+v8-compile-cache-0

@@ -1,0 +1,113 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  user
+  admin_registered
+  admin_full
+}
+
+enum AccountKind {
+  anon
+  regular
+}
+
+enum MessageRole {
+  user
+  assistant
+}
+
+enum FeedbackValue {
+  helpful
+  unhelpful
+  unclear
+}
+
+model User {
+  id             String        @id @default(cuid())
+  accountKind    AccountKind   @map("account_kind")
+  username       String        @unique
+  email          String?       @unique
+  phone          String?       @unique
+  passwordHash   String        @map("password_hash")
+  secretWordHash String?       @map("secret_word_hash")
+  role           Role
+  locale         String
+  createdAt      DateTime      @default(now()) @map("created_at")
+  conversations  Conversation[]
+  messages       Message[]
+  feedback       Feedback[]
+
+  @@map("users")
+  @@index([role])
+}
+
+model Conversation {
+  id         String       @id @default(cuid())
+  userId     String       @map("user_id")
+  user       User         @relation(fields: [userId], references: [id])
+  title      String
+  shareSlug  String?      @map("share_slug")
+  createdAt  DateTime     @default(now()) @map("created_at")
+  messages   Message[]
+  exports    Export[]
+
+  @@map("conversations")
+  @@index([userId])
+}
+
+model Message {
+  id             String       @id @default(cuid())
+  conversationId String       @map("conversation_id")
+  conversation   Conversation @relation(fields: [conversationId], references: [id])
+  role           MessageRole
+  content        String
+  tokens         Int
+  traceId        String?      @map("trace_id")
+  createdAt      DateTime     @default(now()) @map("created_at")
+  feedback       Feedback?
+
+  @@map("messages")
+  @@index([conversationId])
+}
+
+model Feedback {
+  id        String        @id @default(cuid())
+  messageId String        @map("message_id")
+  message   Message       @relation(fields: [messageId], references: [id])
+  value     FeedbackValue
+  createdAt DateTime      @default(now()) @map("created_at")
+
+  @@map("feedback")
+}
+
+model Export {
+  id             String        @id @default(cuid())
+  conversationId String?       @map("conversation_id")
+  conversation   Conversation? @relation(fields: [conversationId], references: [id])
+  messageId      String?       @map("message_id")
+  message        Message?      @relation(fields: [messageId], references: [id])
+  format         String
+  fileKey        String        @map("file_key")
+  createdAt      DateTime      @default(now()) @map("created_at")
+
+  @@map("exports")
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  actor      String
+  action     String
+  entityType String   @map("entity_type")
+  entityId   String   @map("entity_id")
+  meta       Json
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  @@map("audit_logs")
+}

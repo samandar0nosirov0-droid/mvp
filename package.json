@@ -1,0 +1,30 @@
+{
+  "name": "aidvokat",
+  "private": true,
+  "version": "0.1.0",
+  "packageManager": "pnpm@8.15.4",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev --parallel",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "postinstall": "pnpm --filter @aidvokat/api exec prisma generate",
+    "db:migrate": "pnpm --filter @aidvokat/api prisma migrate deploy",
+    "db:migrate:dev": "pnpm --filter @aidvokat/api prisma migrate dev",
+    "db:reset": "pnpm --filter @aidvokat/api prisma migrate reset --force"
+  },
+  "devDependencies": {
+    "turbo": "1.10.12",
+    "husky": "8.0.3",
+    "@commitlint/cli": "17.7.2",
+    "@commitlint/config-conventional": "17.7.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

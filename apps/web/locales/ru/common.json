@@ -1,0 +1,6 @@
+{
+  "common": { "title": "Айдвокат" },
+  "nav": { "lang": "Язык" },
+  "disclaimer": { "text": "Дисклеймер" },
+  "about": { "text": "О проекте" }
+}

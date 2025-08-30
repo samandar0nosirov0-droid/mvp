@@ -1,0 +1,13 @@
+
+> @aidvokat/web@0.1.0 lint /workspace/mvp/apps/web
+> eslint .
+
+
+Oops! Something went wrong! :(
+
+ESLint: 8.57.0
+
+A config object is using the "root" key, which is not supported in flat config system.
+
+Flat configs always act as if they are the root config file, so this key can be safely removed.
+ ELIFECYCLE  Command failed with exit code 2.
