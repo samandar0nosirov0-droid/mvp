@@ -104,6 +104,9 @@ importers:
       cookie-parser:
         specifier: ^1.4.6
         version: 1.4.7
+      express:
+        specifier: ^4.19.2
+        version: 4.21.2
       passport:
         specifier: ^0.6.0
         version: 0.6.0

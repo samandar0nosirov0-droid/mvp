@@ -1,6 +1,8 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
+import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
+import { ErrorsInterceptor } from './common/interceptors/errors.interceptor';
 import cookieParser from 'cookie-parser';
 
 async function bootstrap() {
@@ -18,6 +20,7 @@ async function bootstrap() {
       forbidNonWhitelisted: true
     })
   );
+  app.useGlobalInterceptors(new LoggingInterceptor(), new ErrorsInterceptor());
   await app.listen(process.env.PORT ?? 3001);
 }
 

@@ -13,13 +13,13 @@ export class CasesController {
   constructor(private readonly casesService: CasesService) {}
 
   @Get()
-  @Roles('user', 'admin')
+  @Roles('user', 'admin_registered', 'admin_full')
   findAll(@Req() request: RequestWithUser) {
     return this.casesService.findAllByUser(request.user.id);
   }
 
   @Get(':id')
-  @Roles('user', 'admin')
+  @Roles('user', 'admin_registered', 'admin_full')
   async findOne(@Param() params: { id: string }, @Req() request: RequestWithUser) {
     const parsed = caseIdParamSchema.safeParse(params);
     if (!parsed.success) {
@@ -33,7 +33,7 @@ export class CasesController {
   }
 
   @Post()
-  @Roles('user', 'admin')
+  @Roles('user', 'admin_registered', 'admin_full')
   create(@Req() request: RequestWithUser, @Body() dto: CreateCaseDto) {
     return this.casesService.create(request.user.id, dto);
   }

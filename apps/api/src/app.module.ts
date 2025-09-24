@@ -6,6 +6,10 @@ import { UsersModule } from './users/users.module';
 import { CasesModule } from './cases/cases.module';
 import { MessagesModule } from './messages/messages.module';
 import { PrismaModule } from './prisma/prisma.module';
+import { FeedbackModule } from './feedback/feedback.module';
+import { ExportsModule } from './exports/exports.module';
+import { AdminModule } from './admin/admin.module';
+import { LlmGatewayModule } from './llm-gateway/llm-gateway.module';
 
 @Module({
   imports: [
@@ -19,7 +23,11 @@ import { PrismaModule } from './prisma/prisma.module';
     AuthModule,
     UsersModule,
     CasesModule,
-    MessagesModule
+    MessagesModule,
+    FeedbackModule,
+    ExportsModule,
+    AdminModule,
+    LlmGatewayModule
   ]
 })
 export class AppModule {}

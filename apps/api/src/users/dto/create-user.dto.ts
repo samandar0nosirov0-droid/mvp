@@ -16,7 +16,7 @@ export class CreateUserDto {
   @IsIn(['ru', 'uz'])
   locale: 'ru' | 'uz' = 'ru';
 
-  @IsIn(['user', 'admin'])
+  @IsIn(['user', 'admin_registered', 'admin_full'])
   @IsOptional()
   role: Role = 'user';
 }
