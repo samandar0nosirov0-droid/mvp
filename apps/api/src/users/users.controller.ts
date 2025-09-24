@@ -8,7 +8,7 @@ import { RequestWithUser } from '../common/interfaces/request-with-user.interfac
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class UsersController {
   @Get('me')
-  @Roles('user', 'admin')
+  @Roles('user', 'admin_registered', 'admin_full')
   getProfile(@Req() request: RequestWithUser) {
     const { user } = request;
     return {

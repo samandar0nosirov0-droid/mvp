@@ -13,7 +13,7 @@ export class MessagesController {
   constructor(private readonly messagesService: MessagesService) {}
 
   @Get(':caseId')
-  @Roles('user', 'admin')
+  @Roles('user', 'admin_registered', 'admin_full')
   async findByCase(@Param() params: { caseId: string }) {
     const parsed = caseIdParamSchema.safeParse({ id: params.caseId });
     if (!parsed.success) {
@@ -23,7 +23,7 @@ export class MessagesController {
   }
 
   @Post()
-  @Roles('user', 'admin')
+  @Roles('user', 'admin_registered', 'admin_full')
   create(@Req() request: RequestWithUser, @Body() dto: CreateMessageDto) {
     return this.messagesService.create(request.user.id, dto);
   }

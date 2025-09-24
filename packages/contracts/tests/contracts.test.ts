@@ -1,6 +1,12 @@
 import { randomUUID } from 'node:crypto';
 import { describe, expect, it } from 'vitest';
-import { caseCreateSchema, messageCreateSchema, signInSchema } from '../src';
+import {
+  caseCreateSchema,
+  feedbackCreateSchema,
+  llmPromptSchema,
+  messageCreateSchema,
+  signInSchema
+} from '../src';
 
 describe('contracts', () => {
   it('validates sign-in payload', () => {
@@ -34,6 +40,25 @@ describe('contracts', () => {
         caseId: randomUUID(),
         content: '',
         role: 'user',
+        locale: 'ru'
+      })
+    ).toThrow();
+  });
+
+  it('validates feedback payload shape', () => {
+    const result = feedbackCreateSchema.safeParse({
+      message: 'Отличный сервис, продолжайте!',
+      rating: 5,
+      locale: 'uz'
+    });
+
+    expect(result.success).toBe(true);
+  });
+
+  it('limits llm prompt length', () => {
+    expect(() =>
+      llmPromptSchema.parse({
+        prompt: 'ask',
         locale: 'ru'
       })
     ).toThrow();
