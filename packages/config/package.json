@@ -1,0 +1,7 @@
+{
+  "name": "@aidvokat/config",
+  "version": "0.0.1",
+  "private": true,
+  "main": "eslint.cjs",
+  "types": "tsconfig.json"
+}
