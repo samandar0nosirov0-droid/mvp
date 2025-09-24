@@ -31,6 +31,7 @@ model Session {
   expiresAt  DateTime
   createdAt  DateTime @default(now())
   lastUsedAt DateTime @default(now())
+  anonSessionId String?
 }
 
 model Case {

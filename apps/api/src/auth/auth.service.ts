@@ -1,61 +1,125 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  Logger,
+  UnauthorizedException
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 import { randomUUID } from 'crypto';
 import { ConfigService } from '@nestjs/config';
+import { InjectQueue } from '@nestjs/bullmq';
+import { Queue } from 'bullmq';
 import { UsersService } from '../users/users.service';
 import { PrismaService } from '../prisma/prisma.service';
-import { SignInDto } from './dto/sign-in.dto';
+import { LoginDto } from './dto/login.dto';
+import { RegisterDto } from './dto/register.dto';
 import { RequestUser } from '../common/interfaces/request-with-user.interface';
-import { Role } from '@aidvokat/contracts';
-
+import { Role, UserContract } from '@aidvokat/contracts';
+import { RedisService } from '../common/redis/redis.service';
+import { SESSION_CLEANUP_JOB, SESSION_CLEANUP_QUEUE } from './auth.constants';
 interface TokenPair {
   accessToken: string;
   refreshToken: string;
   sessionId: string;
 }
 
+interface IssueTokenOptions {
+  reuseSessionId?: string;
+  anonSessionId?: string;
+}
+
+type UserEntity = {
+  id: string;
+  email: string;
+  fullName: string;
+  password: string;
+  role: Role;
+  locale: 'ru' | 'uz';
+  createdAt: Date;
+  updatedAt: Date;
+};
+
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
+
   constructor(
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
     private readonly prisma: PrismaService,
-    private readonly configService: ConfigService
+    private readonly configService: ConfigService,
+    private readonly redisService: RedisService,
+    @InjectQueue(SESSION_CLEANUP_QUEUE) private readonly sessionCleanupQueue: Queue
   ) {}
 
-  async validateUser(email: string, password: string): Promise<RequestUser> {
-    const user = await this.usersService.findByEmail(email);
-    if (!user) {
-      throw new UnauthorizedException('Неверные учетные данные');
+  async register(payload: RegisterDto, anonSessionId?: string) {
+    if (payload.password !== payload.confirmPassword) {
+      throw new BadRequestException('Пароли должны совпадать');
     }
 
-    const passwordMatches = await bcrypt.compare(password, user.password);
-    if (!passwordMatches) {
-      throw new UnauthorizedException('Неверные учетные данные');
+    const existing = await this.usersService.findByEmail(payload.email);
+    if (existing) {
+      throw new ConflictException('Пользователь с таким email уже существует');
     }
 
-    return this.sanitizeUser({
-      id: user.id,
-      email: user.email,
-      fullName: user.fullName,
-      role: user.role as Role,
-      locale: user.locale as 'ru' | 'uz'
+    const newUser = await this.usersService.create({
+      email: payload.email,
+      password: payload.password,
+      fullName: payload.fullName,
+      locale: payload.locale,
+      role: 'user'
     });
-  }
 
-  async signIn(payload: SignInDto) {
-    const user = await this.validateUser(payload.email, payload.password);
-    const tokens = await this.issueTokens(user.id, user.role);
+    const tokens = await this.issueTokens(newUser.id, newUser.role as Role, {
+      anonSessionId
+    });
 
     return {
-      user,
+      user: this.toUserContract(newUser),
       accessToken: tokens.accessToken,
       refreshToken: tokens.refreshToken
     };
   }
 
-  async refresh(refreshToken: string | null | undefined) {
+  async login(payload: LoginDto, anonSessionId?: string) {
+    const userRecord = await this.usersService.findByEmail(payload.email);
+    if (!userRecord) {
+      throw new UnauthorizedException('Неверные учетные данные');
+    }
+
+    const passwordMatches = await bcrypt.compare(payload.password, userRecord.password);
+    if (!passwordMatches) {
+      throw new UnauthorizedException('Неверные учетные данные');
+    }
+
+    const tokens = await this.issueTokens(userRecord.id, userRecord.role as Role, {
+      anonSessionId
+    });
+
+    return {
+      user: this.toUserContract(userRecord),
+      accessToken: tokens.accessToken,
+      refreshToken: tokens.refreshToken
+    };
+  }
+
+  async validateUser(email: string, password: string): Promise<RequestUser> {
+    const userRecord = await this.usersService.findByEmail(email);
+    if (!userRecord) {
+      throw new UnauthorizedException('Неверные учетные данные');
+    }
+
+    const passwordMatches = await bcrypt.compare(password, userRecord.password);
+    if (!passwordMatches) {
+      throw new UnauthorizedException('Неверные учетные данные');
+    }
+
+    return this.toRequestUser(userRecord);
+  }
+
+  async refresh(refreshToken: string | null | undefined, anonSessionId?: string) {
     if (!refreshToken) {
       throw new UnauthorizedException('Необходима авторизация');
     }
@@ -78,30 +142,38 @@ export class AuthService {
       throw new UnauthorizedException('Сессия недействительна');
     }
 
+    const cachedHash = await this.redisService.getRefreshTokenHash(session.id);
+    if (!cachedHash) {
+      await this.invalidateSession(session.id);
+      throw new UnauthorizedException('Сессия недействительна');
+    }
+
     const tokenMatches = await bcrypt.compare(refreshToken, session.tokenHash);
     if (!tokenMatches || session.expiresAt < new Date()) {
-      await this.prisma.session.deleteMany({ where: { id: payload.sid } });
+      await this.invalidateSession(session.id);
+      throw new UnauthorizedException('Сессия недействительна');
+    }
+
+    if (cachedHash !== session.tokenHash) {
+      await this.invalidateSession(session.id);
       throw new UnauthorizedException('Сессия недействительна');
     }
 
     const freshUser = await this.usersService.findById(payload.sub);
-    const sanitizedUser = this.sanitizeUser({
-      id: freshUser.id,
-      email: freshUser.email,
-      fullName: freshUser.fullName,
-      role: freshUser.role as Role,
-      locale: freshUser.locale as 'ru' | 'uz'
+    const userContract = this.toUserContract(freshUser);
+    const tokens = await this.issueTokens(payload.sub, userContract.role, {
+      reuseSessionId: session.id,
+      anonSessionId: anonSessionId ?? session.anonSessionId ?? undefined
     });
-    const tokens = await this.issueTokens(payload.sub, sanitizedUser.role, payload.sid);
 
     return {
       accessToken: tokens.accessToken,
       refreshToken: tokens.refreshToken,
-      user: sanitizedUser
+      user: userContract
     };
   }
 
-  async signOut(refreshToken: string | null | undefined) {
+  async logout(refreshToken: string | null | undefined) {
     if (!refreshToken) {
       return;
     }
@@ -111,15 +183,15 @@ export class AuthService {
         secret: this.refreshSecret
       });
       if (payload.type === 'refresh' && payload.sid) {
-        await this.prisma.session.deleteMany({ where: { id: payload.sid } });
+        await this.invalidateSession(payload.sid);
       }
     } catch (error) {
       // токен уже недействителен — просто игнорируем
     }
   }
 
-  private async issueTokens(userId: string, role: Role, reuseSessionId?: string): Promise<TokenPair> {
-    const sessionId = reuseSessionId ?? randomUUID();
+  private async issueTokens(userId: string, role: Role, options: IssueTokenOptions = {}): Promise<TokenPair> {
+    const sessionId = options.reuseSessionId ?? randomUUID();
     const accessTokenTtl = this.accessTtl;
     const refreshTokenTtl = this.refreshTtl;
 
@@ -142,21 +214,80 @@ export class AuthService {
       update: {
         tokenHash: hashedRefreshToken,
         expiresAt,
-        lastUsedAt: new Date()
+        lastUsedAt: new Date(),
+        ...(options.anonSessionId ? { anonSessionId: options.anonSessionId } : {})
       },
       create: {
         id: sessionId,
         userId,
         tokenHash: hashedRefreshToken,
-        expiresAt
+        expiresAt,
+        anonSessionId: options.anonSessionId ?? null
       }
     });
+
+    await this.redisService.storeRefreshTokenHash(sessionId, hashedRefreshToken, this.refreshTtlSeconds);
+    await this.scheduleSessionCleanup(sessionId, this.refreshTtlSeconds * 1000);
 
     return { accessToken, refreshToken, sessionId };
   }
 
-  private sanitizeUser(user: RequestUser): RequestUser {
-    return { ...user };
+  private async scheduleSessionCleanup(sessionId: string, delayMs: number) {
+    try {
+      await this.sessionCleanupQueue.remove(sessionId);
+    } catch (error) {
+      // нет активной задачи — игнорируем
+    }
+
+    await this.sessionCleanupQueue.add(
+      SESSION_CLEANUP_JOB,
+      { sessionId },
+      {
+        delay: delayMs,
+        jobId: sessionId,
+        removeOnComplete: true,
+        removeOnFail: true,
+        attempts: 1
+      }
+    );
+  }
+
+  private async invalidateSession(sessionId: string) {
+    await Promise.all([
+      this.prisma.session.deleteMany({ where: { id: sessionId } }),
+      this.redisService.deleteRefreshTokenHash(sessionId),
+      this.removeCleanupJob(sessionId)
+    ]);
+  }
+
+  private async removeCleanupJob(sessionId: string) {
+    try {
+      await this.sessionCleanupQueue.remove(sessionId);
+    } catch (error) {
+      this.logger.debug(`Очередь очистки: задача ${sessionId} не найдена`);
+    }
+  }
+
+  private toRequestUser(user: UserEntity): RequestUser {
+    return {
+      id: user.id,
+      email: user.email,
+      fullName: user.fullName,
+      role: user.role as Role,
+      locale: user.locale as 'ru' | 'uz'
+    };
+  }
+
+  private toUserContract(user: UserEntity): UserContract {
+    return {
+      id: user.id,
+      email: user.email,
+      fullName: user.fullName,
+      locale: user.locale as 'ru' | 'uz',
+      role: user.role as Role,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt
+    };
   }
 
   private get accessSecret() {

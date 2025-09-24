@@ -20,13 +20,18 @@
     },
     "errors": {
       "invalid": "Ma'lumotlarni tekshirib qaytadan kiriting",
-      "passwordMismatch": "Parollar mos bo'lishi kerak"
+      "passwordMismatch": "Parollar mos bo'lishi kerak",
+      "invalidCredentials": "Email yoki parol noto'g'ri",
+      "emailExists": "Bu email allaqachon ro'yxatdan o'tgan",
+      "server": "Xizmat vaqtincha ishlamayapti. Keyinroq urinib ko'ring.",
+      "network": "Server bilan aloqa yo'q. Internetni tekshiring."
     },
     "signIn": {
       "title": "Shaxsiy kabinetga kirish",
       "description": "Davom etish uchun email va parolni kiriting.",
       "submit": "Kirish",
-      "success": "Kirish muvaffaqiyatli (plug)",
+      "loading": "Kirmoqdamiz...",
+      "success": "Hisobga muvaffaqiyatli kirdingiz",
       "noAccount": "Hisobingiz yo'qmi?",
       "registerCta": "Ro'yxatdan o'tish"
     },
@@ -34,7 +39,8 @@
       "title": "Ro'yxatdan o'tish",
       "description": "Aidvokat imkoniyatlaridan foydalanish uchun akkaunt yarating.",
       "submit": "Akkaunt yaratish",
-      "success": "Ro'yxatdan o'tish muvaffaqiyatli (plug)",
+      "loading": "Akkaunt yaratilmoqda...",
+      "success": "Akkaunt muvaffaqiyatli yaratildi",
       "haveAccount": "Allaqachon akkaunt bormi?",
       "signInCta": "Kirish"
     }

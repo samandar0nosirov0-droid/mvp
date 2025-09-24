@@ -1,11 +1,13 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { FormEvent, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { Button, Card, CardContent, CardFooter, CardHeader, Input, Label } from '@aidvokat/ui';
-import { signUpSchema } from '@aidvokat/contracts';
+import { registerSchema } from '@aidvokat/contracts';
 import { useUserStore } from '../../../lib/store/user-store';
+import { AuthApiError, register } from '../../../lib/api/auth';
 
 interface SignUpFormState {
   fullName: string;
@@ -27,13 +29,16 @@ export default function SignUpPage() {
   const tErrors = useTranslations('auth.errors');
   const locale = useLocale();
   const setUser = useUserStore((state) => state.setUser);
+  const router = useRouter();
   const [formState, setFormState] = useState<SignUpFormState>(initialState);
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const result = signUpSchema.safeParse({
+    const result = registerSchema.safeParse({
       ...formState,
       locale
     });
@@ -45,18 +50,29 @@ export default function SignUpPage() {
     }
 
     setError(null);
-    const now = new Date().toISOString();
-    setUser({
-      id: typeof crypto !== 'undefined' && 'randomUUID' in crypto ? crypto.randomUUID() : 'mock-user-id',
-      email: result.data.email,
-      fullName: result.data.fullName,
-      locale: result.data.locale,
-      role: 'user',
-      createdAt: now,
-      updatedAt: now
-    });
-    // TODO: вызвать API регистрации
-    alert(tSignUp('success')); // eslint-disable-line no-alert
+    setSuccess(null);
+    setIsSubmitting(true);
+
+    try {
+      const response = await register(result.data);
+      setUser(response.user);
+      setSuccess(tSignUp('success'));
+      router.push('/dashboard');
+    } catch (apiError) {
+      if (apiError instanceof AuthApiError) {
+        if (apiError.status === 400) {
+          setError(tErrors('invalid'));
+        } else if (apiError.status === 409) {
+          setError(tErrors('emailExists'));
+        } else {
+          setError(tErrors('server'));
+        }
+      } else {
+        setError(tErrors('network'));
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -118,8 +134,9 @@ export default function SignUpPage() {
               />
             </div>
             {error ? <p className="text-sm text-destructive">{error}</p> : null}
+            {success ? <p className="text-sm text-emerald-600">{success}</p> : null}
             <Button type="submit" className="w-full">
-              {tSignUp('submit')}
+              {isSubmitting ? tSignUp('loading') : tSignUp('submit')}
             </Button>
           </form>
         </CardContent>

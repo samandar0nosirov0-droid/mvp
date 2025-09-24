@@ -1,11 +1,13 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useState, FormEvent } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { Button, Card, CardContent, CardFooter, CardHeader, Input, Label } from '@aidvokat/ui';
-import { signInSchema } from '@aidvokat/contracts';
+import { loginSchema } from '@aidvokat/contracts';
 import { useUserStore } from '../../../lib/store/user-store';
+import { AuthApiError, login } from '../../../lib/api/auth';
 
 export default function SignInPage() {
   const tSignIn = useTranslations('auth.signIn');
@@ -13,12 +15,15 @@ export default function SignInPage() {
   const tErrors = useTranslations('auth.errors');
   const locale = useLocale();
   const setUser = useUserStore((state) => state.setUser);
+  const router = useRouter();
   const [formState, setFormState] = useState({ email: '', password: '' });
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const result = signInSchema.safeParse({
+    const result = loginSchema.safeParse({
       ...formState,
       locale
     });
@@ -29,18 +34,29 @@ export default function SignInPage() {
     }
 
     setError(null);
-    const now = new Date().toISOString();
-    setUser({
-      id: typeof crypto !== 'undefined' && 'randomUUID' in crypto ? crypto.randomUUID() : 'mock-user-id',
-      email: result.data.email,
-      fullName: locale === 'ru' ? 'Иван Иванов' : 'Ali Valiyev',
-      locale: result.data.locale,
-      role: 'user',
-      createdAt: now,
-      updatedAt: now
-    });
-    // TODO: вызвать API авторизации
-    alert(tSignIn('success')); // eslint-disable-line no-alert
+    setSuccess(null);
+    setIsSubmitting(true);
+
+    try {
+      const response = await login(result.data);
+      setUser(response.user);
+      setSuccess(tSignIn('success'));
+      router.push('/dashboard');
+    } catch (apiError) {
+      if (apiError instanceof AuthApiError) {
+        if (apiError.status === 400) {
+          setError(tErrors('invalid'));
+        } else if (apiError.status === 401) {
+          setError(tErrors('invalidCredentials'));
+        } else {
+          setError(tErrors('server'));
+        }
+      } else {
+        setError(tErrors('network'));
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -77,8 +93,9 @@ export default function SignInPage() {
               />
             </div>
             {error ? <p className="text-sm text-destructive">{error}</p> : null}
+            {success ? <p className="text-sm text-emerald-600">{success}</p> : null}
             <Button type="submit" className="w-full">
-              {tSignIn('submit')}
+              {isSubmitting ? tSignIn('loading') : tSignIn('submit')}
             </Button>
           </form>
         </CardContent>

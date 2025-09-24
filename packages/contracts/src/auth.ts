@@ -1,15 +1,15 @@
 import { z } from 'zod';
 import { localeSchema } from './common';
 
-export const signInSchema = z.object({
+export const loginSchema = z.object({
   email: z.string().email({ message: 'Укажите корректный email' }),
   password: z.string().min(8, { message: 'Пароль должен содержать минимум 8 символов' }),
   locale: localeSchema.default('ru')
 });
 
-export type SignInInput = z.infer<typeof signInSchema>;
+export type LoginInput = z.infer<typeof loginSchema>;
 
-export const signUpSchema = signInSchema
+export const registerSchema = loginSchema
   .extend({
     fullName: z.string().min(2, { message: 'Укажите имя полностью' }).max(120),
     confirmPassword: z.string().min(8)
@@ -24,4 +24,7 @@ export const signUpSchema = signInSchema
     }
   });
 
-export type SignUpInput = z.infer<typeof signUpSchema>;
+export type RegisterInput = z.infer<typeof registerSchema>;
+
+export { loginSchema as signInSchema, registerSchema as signUpSchema };
+export type { LoginInput as SignInInput, RegisterInput as SignUpInput };
