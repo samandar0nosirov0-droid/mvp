@@ -1,30 +1,46 @@
 'use client';
 
 import Link from 'next/link';
-import { useState, FormEvent } from 'react';
+import { FormEvent, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { Button, Card, CardContent, CardFooter, CardHeader, Input, Label } from '@aidvokat/ui';
-import { signInSchema } from '@aidvokat/contracts';
+import { signUpSchema } from '@aidvokat/contracts';
 import { useUserStore } from '../../../lib/store/user-store';
 
-export default function SignInPage() {
-  const tSignIn = useTranslations('auth.signIn');
+interface SignUpFormState {
+  fullName: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+}
+
+const initialState: SignUpFormState = {
+  fullName: '',
+  email: '',
+  password: '',
+  confirmPassword: ''
+};
+
+export default function SignUpPage() {
+  const tSignUp = useTranslations('auth.signUp');
   const tFields = useTranslations('auth.fields');
   const tErrors = useTranslations('auth.errors');
   const locale = useLocale();
   const setUser = useUserStore((state) => state.setUser);
-  const [formState, setFormState] = useState({ email: '', password: '' });
+  const [formState, setFormState] = useState<SignUpFormState>(initialState);
   const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const result = signInSchema.safeParse({
+
+    const result = signUpSchema.safeParse({
       ...formState,
       locale
     });
 
     if (!result.success) {
-      setError(tErrors('invalid'));
+      const confirmIssue = result.error.issues.find((issue) => issue.path.includes('confirmPassword'));
+      setError(confirmIssue ? tErrors('passwordMismatch') : tErrors('invalid'));
       return;
     }
 
@@ -33,25 +49,36 @@ export default function SignInPage() {
     setUser({
       id: typeof crypto !== 'undefined' && 'randomUUID' in crypto ? crypto.randomUUID() : 'mock-user-id',
       email: result.data.email,
-      fullName: locale === 'ru' ? 'Иван Иванов' : 'Ali Valiyev',
+      fullName: result.data.fullName,
       locale: result.data.locale,
       role: 'user',
       createdAt: now,
       updatedAt: now
     });
-    // TODO: вызвать API авторизации
-    alert(tSignIn('success')); // eslint-disable-line no-alert
+    // TODO: вызвать API регистрации
+    alert(tSignUp('success')); // eslint-disable-line no-alert
   };
 
   return (
     <div className="flex flex-1 items-center justify-center">
-      <Card className="w-full max-w-md">
+      <Card className="w-full max-w-lg">
         <CardHeader>
-          <h1 className="text-xl font-semibold">{tSignIn('title')}</h1>
-          <p className="text-sm text-muted-foreground">{tSignIn('description')}</p>
+          <h1 className="text-xl font-semibold">{tSignUp('title')}</h1>
+          <p className="text-sm text-muted-foreground">{tSignUp('description')}</p>
         </CardHeader>
         <CardContent>
-          <form className="space-y-4" onSubmit={handleSubmit}>
+          <form className="grid gap-4" onSubmit={handleSubmit}>
+            <div className="space-y-2">
+              <Label htmlFor="fullName">{tFields('fullName')}</Label>
+              <Input
+                id="fullName"
+                name="fullName"
+                autoComplete="name"
+                value={formState.fullName}
+                onChange={(event) => setFormState((prev) => ({ ...prev, fullName: event.target.value }))}
+                required
+              />
+            </div>
             <div className="space-y-2">
               <Label htmlFor="email">{tFields('email')}</Label>
               <Input
@@ -70,23 +97,37 @@ export default function SignInPage() {
                 id="password"
                 name="password"
                 type="password"
-                autoComplete="current-password"
+                autoComplete="new-password"
                 value={formState.password}
                 onChange={(event) => setFormState((prev) => ({ ...prev, password: event.target.value }))}
                 required
+                minLength={8}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="confirmPassword">{tFields('confirmPassword')}</Label>
+              <Input
+                id="confirmPassword"
+                name="confirmPassword"
+                type="password"
+                autoComplete="new-password"
+                value={formState.confirmPassword}
+                onChange={(event) => setFormState((prev) => ({ ...prev, confirmPassword: event.target.value }))}
+                required
+                minLength={8}
               />
             </div>
             {error ? <p className="text-sm text-destructive">{error}</p> : null}
             <Button type="submit" className="w-full">
-              {tSignIn('submit')}
+              {tSignUp('submit')}
             </Button>
           </form>
         </CardContent>
         <CardFooter className="flex justify-center">
           <p className="text-sm text-muted-foreground">
-            {tSignIn('noAccount')}{' '}
+            {tSignUp('haveAccount')}{' '}
             <Button asChild variant="link" className="px-0">
-              <Link href="/sign-up">{tSignIn('registerCta')}</Link>
+              <Link href="/sign-in">{tSignUp('signInCta')}</Link>
             </Button>
           </p>
         </CardFooter>

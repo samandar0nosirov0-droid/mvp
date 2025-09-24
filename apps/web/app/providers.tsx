@@ -3,6 +3,7 @@
 import { NextIntlClientProvider } from 'next-intl';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import * as React from 'react';
+import { ThemeProvider as NextThemesProvider } from 'next-themes';
 import { AppLocale } from '../lib/i18n-config';
 
 function useStableQueryClient() {
@@ -21,7 +22,14 @@ export function Providers({ children, locale, messages }: ProvidersProps) {
 
   return (
     <NextIntlClientProvider locale={locale} messages={messages} timeZone="Asia/Tashkent">
-      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+      <NextThemesProvider
+        attribute="class"
+        defaultTheme="dark"
+        enableSystem={false}
+        storageKey="aidvokat-theme"
+      >
+        <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+      </NextThemesProvider>
     </NextIntlClientProvider>
   );
 }

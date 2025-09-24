@@ -1,6 +1,7 @@
 import { getTranslations } from 'next-intl/server';
 import Link from 'next/link';
 import { Button, Card, CardContent, CardHeader } from '@aidvokat/ui';
+import { UserGreeting } from '../../components/user-greeting';
 
 export default async function DashboardPage() {
   const t = await getTranslations('dashboard');
@@ -15,10 +16,11 @@ export default async function DashboardPage() {
 
   return (
     <section className="space-y-6">
-      <header className="flex items-center justify-between">
-        <div>
+      <header className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div className="space-y-1">
           <h1 className="text-2xl font-semibold tracking-tight">{t('title')}</h1>
           <p className="text-muted-foreground">{t('subtitle')}</p>
+          <UserGreeting />
         </div>
         <Button asChild>
           <Link href="/cases/new">{t('createCase')}</Link>
