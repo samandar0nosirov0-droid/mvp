@@ -5,7 +5,8 @@ import {
   feedbackCreateSchema,
   llmPromptSchema,
   messageCreateSchema,
-  signInSchema
+  signInSchema,
+  signUpSchema
 } from '../src';
 
 describe('contracts', () => {
@@ -17,6 +18,30 @@ describe('contracts', () => {
     });
 
     expect(result.success).toBe(true);
+  });
+
+  it('validates sign-up payload with matching passwords', () => {
+    const result = signUpSchema.safeParse({
+      email: 'user@example.com',
+      password: 'supersecret',
+      confirmPassword: 'supersecret',
+      fullName: 'Ali Valiyev',
+      locale: 'ru'
+    });
+
+    expect(result.success).toBe(true);
+  });
+
+  it('rejects sign-up when passwords differ', () => {
+    const result = signUpSchema.safeParse({
+      email: 'user@example.com',
+      password: 'supersecret',
+      confirmPassword: 'another',
+      fullName: 'Ali Valiyev',
+      locale: 'ru'
+    });
+
+    expect(result.success).toBe(false);
   });
 
   it('removes empty metadata entries for cases', () => {

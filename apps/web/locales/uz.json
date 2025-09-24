@@ -1,29 +1,100 @@
 {
+  "common": {
+    "languageSwitcher": {
+      "label": "Tilni almashtirish",
+      "ru": "Русский",
+      "uz": "O'zbekcha"
+    },
+    "themeToggle": {
+      "toggle": "Mavzuni almashtirish",
+      "light": "Yorug' rejimni yoqish",
+      "dark": "Qorong'i rejimni yoqish"
+    }
+  },
   "auth": {
-    "title": "Shaxsiy kabinetga kirish",
-    "description": "Davom etish uchun email va parolni kiriting.",
-    "email": "Email",
-    "password": "Parol",
-    "submit": "Kirish",
-    "error": "Maʼlumotlarni tekshirib qaytadan kiriting",
-    "success": "Kirish muvaffaqiyatli (plug)"
+    "fields": {
+      "email": "Email",
+      "password": "Parol",
+      "confirmPassword": "Parolni tasdiqlash",
+      "fullName": "To'liq ism"
+    },
+    "errors": {
+      "invalid": "Ma'lumotlarni tekshirib qaytadan kiriting",
+      "passwordMismatch": "Parollar mos bo'lishi kerak"
+    },
+    "signIn": {
+      "title": "Shaxsiy kabinetga kirish",
+      "description": "Davom etish uchun email va parolni kiriting.",
+      "submit": "Kirish",
+      "success": "Kirish muvaffaqiyatli (plug)",
+      "noAccount": "Hisobingiz yo'qmi?",
+      "registerCta": "Ro'yxatdan o'tish"
+    },
+    "signUp": {
+      "title": "Ro'yxatdan o'tish",
+      "description": "Aidvokat imkoniyatlaridan foydalanish uchun akkaunt yarating.",
+      "submit": "Akkaunt yaratish",
+      "success": "Ro'yxatdan o'tish muvaffaqiyatli (plug)",
+      "haveAccount": "Allaqachon akkaunt bormi?",
+      "signInCta": "Kirish"
+    }
   },
   "dashboard": {
     "title": "Kabinet",
-    "subtitle": "Soʻrovlaringiz va sunʼiy intellekt javoblarini kuzating",
-    "createCase": "Yangi soʻrov",
+    "subtitle": "So'rovlaringiz va sun'iy intellekt javoblarini kuzating",
+    "createCase": "Yangi so'rov",
     "openCase": "Ochish",
     "lastUpdated": "Yangilandi: {date}",
+    "welcome": "Xush kelibsiz, {name}!",
     "sampleCase": {
-      "title": "Oila huquqi boʻyicha maslahat"
+      "title": "Oila huquqi bo'yicha maslahat"
     }
   },
   "caseDetail": {
-    "back": "Roʻyxatga qaytish",
+    "back": "Ro'yxatga qaytish",
     "lastUpdated": "Yangilandi: {date}",
     "sample": {
       "title": "Nikohni bekor qilish",
       "description": "Nikohni bekor qilish va mulkni taqsimlash tartibini bilmoqchiman."
     }
+  },
+  "about": {
+    "title": "«Aidvokat» loyihasi haqida",
+    "missionTitle": "Bizning maqsad",
+    "missionBody": "Huquqiy me'yorlarni sodda tilda tushuntirib beradigan va O'zbekiston aholisi uchun byurokratiyasiz maslahat beradigan raqamli yordamchini yaratmoqdamiz.",
+    "visionTitle": "Biz nimalarni rivojlantiryapmiz",
+    "visionBody": "Aidvokat jamoasi mahalliy qonunchilik, til xususiyatlari va foydalanuvchilarning kundalik ehtiyojlarini inobatga olgan holda platformani takomillashtirmoqda.",
+    "pillarsTitle": "Xizmat tamoyillari",
+    "pillars": {
+      "accessible": {
+        "title": "Har bir foydalanuvchi uchun",
+        "body": "Rus va o'zbek tillarida interfeys, moslashtirilgan ssenariylar va tushunarli ko'rsatmalar."
+      },
+      "secure": {
+        "title": "Ma'lumotlarning xavfsizligi",
+        "body": "Foydalanuvchilarning shaxsiy ma'lumotlari jurnallarda saqlanmaydi va zamonaviy usullar bilan himoyalanadi."
+      },
+      "support": {
+        "title": "Mutaxassislar yordami",
+        "body": "Hamkor yuristlar sun'iy intellekt tavsiyalarini tekshiradi va murakkab holatlarda yordam beradi."
+      }
+    },
+    "ctaTitle": "Qanday qo'shilish mumkin",
+    "ctaBody": "Yangiliklarni kuzatish va dastlabki maslahatlarni sinab ko'rish uchun bepul akkaunt yarating."
+  },
+  "share": {
+    "title": "Ochiq so'rov",
+    "description": "Foydalanuvchilar maslahat namunalarini ko'rishi va ulardan o'rganishi uchun shaxsiy ma'lumotlarsiz holatlarni ulashamiz.",
+    "loading": "So'rov ma'lumotlari yuklanmoqda...",
+    "notFound": "So'rov topilmadi yoki endi mavjud emas.",
+    "metadata": {
+      "language": "Til: {language}",
+      "updatedAt": "Yangilandi: {date}"
+    },
+    "language": {
+      "ru": "Русский",
+      "uz": "O'zbekcha"
+    },
+    "cta": "Shu kabi so'rov yaratish"
   }
 }

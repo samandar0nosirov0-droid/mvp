@@ -8,3 +8,20 @@ export const signInSchema = z.object({
 });
 
 export type SignInInput = z.infer<typeof signInSchema>;
+
+export const signUpSchema = signInSchema
+  .extend({
+    fullName: z.string().min(2, { message: 'Укажите имя полностью' }).max(120),
+    confirmPassword: z.string().min(8)
+  })
+  .superRefine((data, ctx) => {
+    if (data.password !== data.confirmPassword) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['confirmPassword'],
+        message: 'Пароли должны совпадать'
+      });
+    }
+  });
+
+export type SignUpInput = z.infer<typeof signUpSchema>;
