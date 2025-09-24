@@ -7,24 +7,33 @@ import { RequestWithUser } from '../common/interfaces/request-with-user.interfac
 import { CreateMessageDto } from './dto/create-message.dto';
 import { MessagesService } from './messages.service';
 
-@Controller('messages')
+@Controller('cases/:caseId/messages')
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class MessagesController {
   constructor(private readonly messagesService: MessagesService) {}
 
-  @Get(':caseId')
+  @Get()
   @Roles('user', 'admin_registered', 'admin_full')
-  async findByCase(@Param() params: { caseId: string }) {
-    const parsed = caseIdParamSchema.safeParse({ id: params.caseId });
+  async findByCase(@Req() request: RequestWithUser, @Param('caseId') caseId: string) {
+    const parsed = caseIdParamSchema.safeParse({ id: caseId });
     if (!parsed.success) {
       throw new BadRequestException('Некорректный идентификатор дела');
     }
-    return this.messagesService.findByCase(parsed.data.id);
+    return this.messagesService.findByCase(parsed.data.id, request.user.id);
   }
 
   @Post()
   @Roles('user', 'admin_registered', 'admin_full')
-  create(@Req() request: RequestWithUser, @Body() dto: CreateMessageDto) {
-    return this.messagesService.create(request.user.id, dto);
+  create(
+    @Req() request: RequestWithUser,
+    @Param('caseId') caseId: string,
+    @Body() dto: CreateMessageDto
+  ) {
+    const parsed = caseIdParamSchema.safeParse({ id: caseId });
+    if (!parsed.success) {
+      throw new BadRequestException('Некорректный идентификатор дела');
+    }
+
+    return this.messagesService.createForCase(request.user.id, parsed.data.id, dto);
   }
 }

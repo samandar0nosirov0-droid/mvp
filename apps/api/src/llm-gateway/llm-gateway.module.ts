@@ -7,6 +7,7 @@ import { RolesGuard } from '../common/guards/roles.guard';
 @Module({
   imports: [ConfigModule],
   controllers: [LlmGatewayController],
-  providers: [LlmGatewayService, RolesGuard]
+  providers: [LlmGatewayService, RolesGuard],
+  exports: [LlmGatewayService]
 })
 export class LlmGatewayModule {}

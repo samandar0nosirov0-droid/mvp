@@ -59,6 +59,43 @@
   "caseDetail": {
     "back": "Ro'yxatga qaytish",
     "lastUpdated": "Yangilandi: {date}",
+    "loading": "So'rov ma'lumotlari yuklanmoqda...",
+    "notFound": "So'rov topilmadi yoki unga ruxsat yo'q.",
+    "actions": {
+      "copy": "Nusxa olish",
+      "copied": "Nusxa olindi",
+      "feedback": "Fikr bildirish",
+      "language": "So'rov tili"
+    },
+    "feedback": {
+      "placeholder": "Tez orada javobni baholash oynasi paydo bo'ladi."
+    },
+    "roles": {
+      "user": "Siz",
+      "assistant": "Aidvokat",
+      "system": "Tizim"
+    },
+    "meta": {
+      "locale": "Til: {locale}",
+      "trace": "Trace ID: {trace}",
+      "tokens": "Tokenlar — so'rov: {prompt}, javob: {completion}"
+    },
+    "locales": {
+      "ru": "Русский",
+      "uz": "O'zbekcha"
+    },
+    "chat": {
+      "title": "Aidvokat bilan suhbat",
+      "loading": "Xabarlar yuklanmoqda...",
+      "error": "Xabarlarni olishda xatolik. Sahifani yangilang.",
+      "empty": "Hozircha xabarlar yo'q. Savolingizni yozing.",
+      "inputLabel": "Savolingiz",
+      "placeholder": "Yordam kerak bo'lgan vaziyatni tavsiflang...",
+      "hint": "Javob {locale} tilida bo'ladi.",
+      "submit": "Yuborish",
+      "sending": "Yuborilmoqda...",
+      "sendError": "Xabarni yuborib bo'lmadi. Birozdan so'ng urinib ko'ring."
+    },
     "sample": {
       "title": "Nikohni bekor qilish",
       "description": "Nikohni bekor qilish va mulkni taqsimlash tartibini bilmoqchiman."

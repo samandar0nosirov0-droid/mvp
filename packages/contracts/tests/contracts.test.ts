@@ -1,6 +1,14 @@
 import { randomUUID } from 'node:crypto';
 import { describe, expect, it } from 'vitest';
-import { caseCreateSchema, feedbackCreateSchema, llmPromptSchema, loginSchema, messageCreateSchema, registerSchema } from '../src';
+import {
+  caseCreateSchema,
+  caseMessageCreateSchema,
+  feedbackCreateSchema,
+  llmPromptSchema,
+  loginSchema,
+  messageCreateSchema,
+  registerSchema
+} from '../src';
 
 describe('contracts', () => {
   it('validates login payload', () => {
@@ -55,12 +63,22 @@ describe('contracts', () => {
   it('enforces message length restrictions', () => {
     expect(() =>
       messageCreateSchema.parse({
-        caseId: randomUUID(),
         content: '',
         role: 'user',
         locale: 'ru'
       })
     ).toThrow();
+  });
+
+  it('validates case message payload with case id', () => {
+    const result = caseMessageCreateSchema.safeParse({
+      caseId: randomUUID(),
+      content: 'Вопрос по алиментам',
+      role: 'user',
+      locale: 'ru'
+    });
+
+    expect(result.success).toBe(true);
   });
 
   it('validates feedback payload shape', () => {
