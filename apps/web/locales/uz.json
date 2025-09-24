@@ -1,5 +1,14 @@
 {
   "common": {
+    "brand": {
+      "name": "Aidvokat",
+      "tagline": "O'zbekiston aholisi uchun huquqiy savollarga sun'iy intellekt yordamchisi"
+    },
+    "navigation": {
+      "dashboard": "Kabinet",
+      "about": "Loyiha haqida",
+      "cases": "Mening so'rovlarim"
+    },
     "languageSwitcher": {
       "label": "Tilni almashtirish",
       "ru": "Русский",
@@ -9,6 +18,22 @@
       "toggle": "Mavzuni almashtirish",
       "light": "Yorug' rejimni yoqish",
       "dark": "Qorong'i rejimni yoqish"
+    },
+    "footer": {
+      "disclaimerTitle": "Muhim",
+      "disclaimerIntro": "Aidvokat xizmati umumiy tavsiyalar beradi va shaxsiy advokat maslahatini almashtirmaydi.",
+      "disclaimerItem1": "Javoblar sun'iy intellekt yordamida shakllantiriladi va moderatsiyadan o'tadi, yakuniy qaror foydalanuvchiga tegishli.",
+      "disclaimerItem2": "So'rov matnlarida shaxsiy yoki maxfiy ma'lumotlarni kiritmang.",
+      "disclaimerItem3": "Rasmiy hujjatlar va sud ishlari uchun litsenziyaga ega mutaxassislarga murojaat qiling.",
+      "linksTitle": "Bo'limlar",
+      "linkAbout": "Loyiha haqida",
+      "linkFaq": "Ko'p beriladigan savollar",
+      "linkPrivacy": "Maxfiylik siyosati",
+      "linkTerms": "Foydalanuvchi shartlari",
+      "contactTitle": "Bog'lanish",
+      "contactEmail": "support@aidvokat.uz",
+      "contactHours": "Dushanba–Juma, 10:00–18:00 (Asia/Tashkent)",
+      "copyright": "© {year} “Aidvokat”. Barcha huquqlar himoyalangan."
     }
   },
   "auth": {
@@ -27,7 +52,7 @@
       "network": "Server bilan aloqa yo'q. Internetni tekshiring."
     },
     "signIn": {
-      "title": "Shaxsiy kabinetga kirish",
+      "title": "Kabinetga kirish",
       "description": "Davom etish uchun email va parolni kiriting.",
       "submit": "Kirish",
       "loading": "Kirmoqdamiz...",
@@ -54,6 +79,14 @@
     "welcome": "Xush kelibsiz, {name}!",
     "sampleCase": {
       "title": "Oila huquqi bo'yicha maslahat"
+    },
+    "plan": {
+      "title": "Tarif va limitlar",
+      "current": "Joriy tarif: {name}",
+      "free": "Bepul kirish",
+      "requestsLeft": "Ushbu oyda qolgan maslahatlar: {count}",
+      "renewal": "Kengaytirish narxi: {amount}/oy",
+      "upgradeCta": "Tariflarni ko'rish"
     }
   },
   "caseDetail": {
