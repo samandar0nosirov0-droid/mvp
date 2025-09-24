@@ -36,7 +36,7 @@ module.exports = {
         project: './tsconfig.base.json'
       }
     },
-    'import/core-modules': ['next-intl/client']
+    'import/core-modules': ['next-intl/client', 'ioredis']
   },
   rules: {
     'import/order': 'off',

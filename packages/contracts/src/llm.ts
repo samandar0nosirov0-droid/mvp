@@ -20,3 +20,17 @@ export const llmPromptSchema = z.object({
 });
 
 export type LlmPromptInput = z.infer<typeof llmPromptSchema>;
+
+export const llmGatewayResponseSchema = z.object({
+  reply: z.string().min(1),
+  metadata: z
+    .object({
+      traceId: z.string().optional(),
+      locale: localeSchema.default('ru'),
+      promptTokens: z.number().int().nonnegative().optional(),
+      completionTokens: z.number().int().nonnegative().optional()
+    })
+    .default({ locale: 'ru' })
+});
+
+export type LlmGatewayResponse = z.infer<typeof llmGatewayResponseSchema>;
