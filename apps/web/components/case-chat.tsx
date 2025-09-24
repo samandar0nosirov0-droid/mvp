@@ -12,6 +12,7 @@ import {
   sendCaseMessage
 } from '../lib/api/cases';
 import { AppLocale } from '../lib/i18n-config';
+import { formatDate } from '../lib/format';
 
 export interface CaseChatProps {
   caseId: string;
@@ -151,17 +152,6 @@ export function CaseChat({ caseId }: CaseChatProps) {
     }
   }, [caseDetail?.language, localeInitialized]);
 
-  const dateFormatter = useMemo(
-    () =>
-      new Intl.DateTimeFormat(locale === 'uz' ? 'uz-UZ' : 'ru-RU', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-        timeZone: 'Asia/Tashkent'
-      }),
-    [locale]
-  );
-
   if (caseLoading) {
     return <p className="text-sm text-muted-foreground">{t('loading')}</p>;
   }
@@ -176,7 +166,7 @@ export function CaseChat({ caseId }: CaseChatProps) {
         <CardHeader>
           <h1 className="text-2xl font-semibold">{caseDetail.title}</h1>
           <p className="text-sm text-muted-foreground">
-            {t('lastUpdated', { date: dateFormatter.format(new Date(caseDetail.updatedAt)) })}
+            {t('lastUpdated', { date: formatDate(caseDetail.updatedAt, locale) })}
           </p>
         </CardHeader>
         <CardContent>

@@ -1,16 +1,22 @@
-import { getTranslations } from 'next-intl/server';
+import { getLocale, getTranslations } from 'next-intl/server';
 import Link from 'next/link';
 import { Button, Card, CardContent, CardHeader } from '@aidvokat/ui';
+import { AppLocale } from '../../lib/i18n-config';
+import { formatCurrency, formatDate } from '../../lib/format';
 import { UserGreeting } from '../../components/user-greeting';
 
+const planRequestsLeft = 3;
+const planRenewalPrice = 150000;
+
 export default async function DashboardPage() {
+  const locale = (await getLocale()) as AppLocale;
   const t = await getTranslations('dashboard');
 
   const cases = [
     {
       id: '00000000-0000-0000-0000-000000000001',
       title: t('sampleCase.title'),
-      updatedAt: '01.01.2024'
+      updatedAt: new Date('2024-01-15T10:00:00+05:00')
     }
   ];
 
@@ -34,7 +40,7 @@ export default async function DashboardPage() {
             </CardHeader>
             <CardContent className="space-y-2">
               <p className="text-sm text-muted-foreground">
-                {t('lastUpdated', { date: legalCase.updatedAt })}
+                {t('lastUpdated', { date: formatDate(legalCase.updatedAt, locale) })}
               </p>
               <Button variant="secondary" asChild>
                 <Link href={`/cases/${legalCase.id}`}>{t('openCase')}</Link>
@@ -42,6 +48,25 @@ export default async function DashboardPage() {
             </CardContent>
           </Card>
         ))}
+        <Card>
+          <CardHeader>
+            <h2 className="text-lg font-medium">{t('plan.title')}</h2>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            <p className="text-sm text-muted-foreground">
+              {t('plan.current', { name: t('plan.free') })}
+            </p>
+            <p className="text-sm text-muted-foreground">
+              {t('plan.requestsLeft', { count: planRequestsLeft })}
+            </p>
+            <p className="text-sm text-muted-foreground">
+              {t('plan.renewal', { amount: formatCurrency(planRenewalPrice, locale) })}
+            </p>
+            <Button variant="outline" asChild>
+              <Link href="/#tariffs">{t('plan.upgradeCta')}</Link>
+            </Button>
+          </CardContent>
+        </Card>
       </div>
     </section>
   );

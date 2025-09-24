@@ -6,6 +6,9 @@ import { useLocale, useTranslations } from 'next-intl';
 import { Button } from '@aidvokat/ui';
 import { locales } from '../lib/i18n-config';
 
+const COOKIE_MAX_AGE = 60 * 60 * 24 * 365; // 1 год
+const COOKIE_NAME = 'NEXT_LOCALE';
+
 export function LanguageSwitcher() {
   const locale = useLocale();
   const router = useRouter();
@@ -15,8 +18,12 @@ export function LanguageSwitcher() {
 
   const handleChange = () => {
     const nextLocale = locales.find((item) => item !== locale) ?? locale;
+
+    document.cookie = `${COOKIE_NAME}=${nextLocale}; max-age=${COOKIE_MAX_AGE}; path=/; SameSite=Lax`;
+
     startTransition(() => {
       router.replace(pathname, { locale: nextLocale });
+      router.refresh();
     });
   };
 
