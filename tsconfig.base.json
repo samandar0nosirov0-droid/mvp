@@ -1,0 +1,15 @@
+{
+  "extends": "./packages/config/tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@aidvokat/ui": ["packages/ui/src/index.ts"],
+      "@aidvokat/ui/*": ["packages/ui/src/*"],
+      "@aidvokat/contracts": ["packages/contracts/src/index.ts"],
+      "@aidvokat/contracts/*": ["packages/contracts/src/*"],
+      "@aidvokat/config/*": ["packages/config/*"]
+    }
+  },
+  "include": ["apps", "packages", "vitest.config.ts"],
+  "exclude": ["node_modules", "**/dist", "**/.next"]
+}

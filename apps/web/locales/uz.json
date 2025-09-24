@@ -1,0 +1,29 @@
+{
+  "auth": {
+    "title": "Shaxsiy kabinetga kirish",
+    "description": "Davom etish uchun email va parolni kiriting.",
+    "email": "Email",
+    "password": "Parol",
+    "submit": "Kirish",
+    "error": "Maʼlumotlarni tekshirib qaytadan kiriting",
+    "success": "Kirish muvaffaqiyatli (plug)"
+  },
+  "dashboard": {
+    "title": "Kabinet",
+    "subtitle": "Soʻrovlaringiz va sunʼiy intellekt javoblarini kuzating",
+    "createCase": "Yangi soʻrov",
+    "openCase": "Ochish",
+    "lastUpdated": "Yangilandi: {date}",
+    "sampleCase": {
+      "title": "Oila huquqi boʻyicha maslahat"
+    }
+  },
+  "caseDetail": {
+    "back": "Roʻyxatga qaytish",
+    "lastUpdated": "Yangilandi: {date}",
+    "sample": {
+      "title": "Nikohni bekor qilish",
+      "description": "Nikohni bekor qilish va mulkni taqsimlash tartibini bilmoqchiman."
+    }
+  }
+}
