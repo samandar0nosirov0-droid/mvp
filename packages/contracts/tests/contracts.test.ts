@@ -1,17 +1,10 @@
 import { randomUUID } from 'node:crypto';
 import { describe, expect, it } from 'vitest';
-import {
-  caseCreateSchema,
-  feedbackCreateSchema,
-  llmPromptSchema,
-  messageCreateSchema,
-  signInSchema,
-  signUpSchema
-} from '../src';
+import { caseCreateSchema, feedbackCreateSchema, llmPromptSchema, loginSchema, messageCreateSchema, registerSchema } from '../src';
 
 describe('contracts', () => {
-  it('validates sign-in payload', () => {
-    const result = signInSchema.safeParse({
+  it('validates login payload', () => {
+    const result = loginSchema.safeParse({
       email: 'user@example.com',
       password: 'supersecret',
       locale: 'uz'
@@ -20,8 +13,8 @@ describe('contracts', () => {
     expect(result.success).toBe(true);
   });
 
-  it('validates sign-up payload with matching passwords', () => {
-    const result = signUpSchema.safeParse({
+  it('validates registration payload with matching passwords', () => {
+    const result = registerSchema.safeParse({
       email: 'user@example.com',
       password: 'supersecret',
       confirmPassword: 'supersecret',
@@ -32,8 +25,8 @@ describe('contracts', () => {
     expect(result.success).toBe(true);
   });
 
-  it('rejects sign-up when passwords differ', () => {
-    const result = signUpSchema.safeParse({
+  it('rejects registration when passwords differ', () => {
+    const result = registerSchema.safeParse({
       email: 'user@example.com',
       password: 'supersecret',
       confirmPassword: 'another',

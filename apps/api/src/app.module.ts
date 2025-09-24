@@ -10,6 +10,7 @@ import { FeedbackModule } from './feedback/feedback.module';
 import { ExportsModule } from './exports/exports.module';
 import { AdminModule } from './admin/admin.module';
 import { LlmGatewayModule } from './llm-gateway/llm-gateway.module';
+import { RedisModule } from './common/redis/redis.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { LlmGatewayModule } from './llm-gateway/llm-gateway.module';
       }
     }),
     PrismaModule,
+    RedisModule,
     AuthModule,
     UsersModule,
     CasesModule,

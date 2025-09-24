@@ -107,6 +107,9 @@ importers:
       express:
         specifier: ^4.19.2
         version: 4.21.2
+      ioredis:
+        specifier: ^5.7.0
+        version: 5.7.0
       passport:
         specifier: ^0.6.0
         version: 0.6.0
