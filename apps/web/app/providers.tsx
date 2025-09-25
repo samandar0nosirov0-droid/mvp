@@ -1,6 +1,6 @@
 'use client';
 
-import { NextIntlClientProvider } from 'next-intl';
+import { NextIntlClientProvider, type AbstractIntlMessages } from 'next-intl';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import * as React from 'react';
 import { ThemeProvider as NextThemesProvider } from 'next-themes';
@@ -14,7 +14,7 @@ function useStableQueryClient() {
 export interface ProvidersProps {
   children: React.ReactNode;
   locale: AppLocale;
-  messages: Record<string, unknown>;
+  messages: AbstractIntlMessages;
 }
 
 export function Providers({ children, locale, messages }: ProvidersProps) {

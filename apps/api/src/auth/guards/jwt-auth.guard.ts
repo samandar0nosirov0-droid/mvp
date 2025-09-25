@@ -4,11 +4,16 @@ import { RequestUser } from '../../common/interfaces/request-with-user.interface
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
-  handleRequest(err: unknown, user: RequestUser | false) {
+  handleRequest<TUser = RequestUser>(
+    err: unknown,
+    user: RequestUser | false,
+    ..._rest: unknown[]
+  ): TUser {
+    void _rest;
     if (err || !user) {
       throw err || new UnauthorizedException('Необходима авторизация');
     }
-    return user;
+    return user as TUser;
   }
 
   canActivate(context: ExecutionContext) {

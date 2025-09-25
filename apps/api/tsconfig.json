@@ -10,7 +10,8 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "strictPropertyInitialization": false,
-    "types": ["node", "jest"]
+    "skipLibCheck": true,
+    "types": ["node", "jest", "express"]
   },
   "include": ["src", "test", "prisma"],
   "exclude": ["dist", "node_modules"]

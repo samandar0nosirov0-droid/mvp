@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { BullModule } from '@nestjs/bullmq';
+import type { ConnectionOptions } from 'bullmq';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { CasesModule } from './cases/cases.module';
@@ -16,9 +17,7 @@ import { RedisModule } from './common/redis/redis.module';
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     BullModule.forRoot({
-      connection: {
-        url: process.env.REDIS_URL ?? 'redis://localhost:6379'
-      }
+      connection: (process.env.REDIS_URL ?? 'redis://localhost:6379') as unknown as ConnectionOptions
     }),
     PrismaModule,
     RedisModule,

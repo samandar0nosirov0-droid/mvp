@@ -1,4 +1,3 @@
-import type { Message } from '@prisma/client';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateMessageDto } from './dto/create-message.dto';
@@ -7,6 +6,8 @@ import { LlmGatewayService } from '../llm-gateway/llm-gateway.service';
 
 // Разрешённые роли для контекста LLM
 type ChatRole = 'user' | 'assistant' | 'system';
+
+type MinimalMessage = { role: string | null; content: string };
 
 // Роль ассистента по контракту (fallback на 'assistant')
 const assistantRole: MessageRole = (
@@ -50,10 +51,10 @@ export class MessagesService {
       }
     });
 
-    // Явно типизируем entry, чтобы пройти @typescript-eslint/no-explicit-any
-    const context = history.map((entry: Message) => ({
-      role: (entry.role as ChatRole) ?? 'user',
-      content: entry.content
+    // Минимальная проекция сообщений для контекста LLM
+    const context = history.map(({ role, content }: MinimalMessage) => ({
+      role: (role as ChatRole) ?? 'user',
+      content
     }));
 
     // Запрос к LLM с историей
