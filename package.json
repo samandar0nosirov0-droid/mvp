@@ -4,9 +4,10 @@
   "version": "0.0.0",
   "packageManager": "pnpm@8.15.4",
   "scripts": {
+    "typecheck": "pnpm -r --if-present run typecheck",
     "dev": "pnpm -r --parallel run dev",
     "build": "pnpm -r run build",
-    "lint": "eslint .",
+    "lint": "pnpm -r --if-present run lint",
     "test": "pnpm -r run test",
     "migrate": "pnpm --filter @aidvokat/api run migrate",
     "prisma:generate": "node ./scripts/prisma-generate.mjs",
