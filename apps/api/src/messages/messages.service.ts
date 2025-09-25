@@ -1,3 +1,4 @@
+import type { Message } from '@prisma/client';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateMessageDto } from './dto/create-message.dto';
@@ -6,12 +7,6 @@ import { LlmGatewayService } from '../llm-gateway/llm-gateway.service';
 
 // Разрешённые роли для контекста LLM
 type ChatRole = 'user' | 'assistant' | 'system';
-
-// Элементы истории, которые нам нужны для контекста
-type HistoryEntry = {
-  role: string;     // Хранимое в БД значение (может быть шире)
-  content: string;
-};
 
 // Роль ассистента по контракту (fallback на 'assistant')
 const assistantRole: MessageRole = (
@@ -55,10 +50,10 @@ export class MessagesService {
       }
     });
 
-    // Явная типизация параметра entry устраняет TS7006 (implicit any)
-    const context = history.map(({ role, content }: HistoryEntry) => ({
-      role: (role as ChatRole) ?? 'user',
-      content
+    // Явно типизируем entry, чтобы пройти @typescript-eslint/no-explicit-any
+    const context = history.map((entry: Message) => ({
+      role: (entry.role as ChatRole) ?? 'user',
+      content: entry.content
     }));
 
     // Запрос к LLM с историей
