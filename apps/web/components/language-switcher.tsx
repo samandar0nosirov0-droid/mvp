@@ -1,13 +1,15 @@
 'use client';
 
 import { useTransition } from 'react';
-import { useRouter, usePathname } from 'next-intl/client';
+import { createNavigation } from 'next-intl/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import { Button } from '@aidvokat/ui';
 import { locales } from '../lib/i18n-config';
 
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 365; // 1 год
 const COOKIE_NAME = 'NEXT_LOCALE';
+
+const { useRouter, usePathname } = createNavigation();
 
 export function LanguageSwitcher() {
   const locale = useLocale();

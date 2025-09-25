@@ -9,6 +9,8 @@ type MinimalMsg = { role: string; content: string };
 // Разрешённые роли для контекста LLM
 type ChatRole = 'user' | 'assistant' | 'system';
 
+type MinimalMessage = { role: string | null; content: string };
+
 // Роль ассистента по контракту (fallback на 'assistant')
 const assistantRole: MessageRole = (
   (messageRoleSchema.options as readonly MessageRole[]).find((role) => role === 'assistant') ??
@@ -50,6 +52,11 @@ export class MessagesService {
         locale: parsed.locale
       }
     });
+
+
+    const context = history.map(({ role, content }: MinimalMessage) => ({
+      role: (role as ChatRole) ?? 'user',
+      content
 
     // Используем локальный минимальный тип, чтобы не зависеть от генерации Prisma-типа в тестах
     const context = history.map((entry: MinimalMsg) => ({
