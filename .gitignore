@@ -11,3 +11,7 @@ node_modules
 /apps/api/node_modules
 /packages/*/dist
 package-lock.json
+
+apps/web/node_modules/
+packages/ui/node_modules/.bin/
+packages/contracts/node_modules/.vite/
