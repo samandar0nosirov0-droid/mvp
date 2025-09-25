@@ -17,7 +17,7 @@ import { RedisModule } from './common/redis/redis.module';
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     BullModule.forRoot({
-      connection: (process.env.REDIS_URL ?? 'redis://localhost:6379') as unknown as ConnectionOptions
+      connection: (process.env.REDIS_URL ?? 'redis://localhost:6379') as ConnectionOptions
     }),
     PrismaModule,
     RedisModule,

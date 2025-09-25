@@ -3,8 +3,5 @@
   "version": "0.0.1",
   "private": true,
   "main": "eslint.cjs",
-  "types": "tsconfig.json",
-  "scripts": {
-    "typecheck": "tsc -p tsconfig.json --noEmit"
-  }
+  "types": "tsconfig.json"
 }
