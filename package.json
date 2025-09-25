@@ -10,6 +10,7 @@
     "test": "pnpm -r run test",
     "migrate": "pnpm --filter @aidvokat/api run migrate",
     "prisma:generate": "node ./scripts/prisma-generate.mjs",
+    "smoke:agent": "pnpm --filter @aidvokat/api run smoke",
     "prepare": "husky install"
   },
   "lint-staged": {

@@ -8,6 +8,7 @@
     "start": "node dist/main.js",
     "lint": "eslint src --ext .ts",
     "test": "jest --passWithNoTests",
+    "smoke": "jest --runTestsByPath src/llm-gateway/llm-gateway.service.spec.ts",
     "prisma:generate": "prisma generate",
     "migrate": "prisma migrate dev"
   },
