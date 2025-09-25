@@ -4,12 +4,10 @@ import { CreateMessageDto } from './dto/create-message.dto';
 import { caseMessageCreateSchema, messageRoleSchema, MessageRole } from '@aidvokat/contracts';
 import { LlmGatewayService } from '../llm-gateway/llm-gateway.service';
 
-type MinimalMsg = { role: string; content: string };
+type MinimalMsg = { role: string; content: string | null };
 
 // Разрешённые роли для контекста LLM
 type ChatRole = 'user' | 'assistant' | 'system';
-
-type MinimalMessage = { role: string | null; content: string };
 
 // Роль ассистента по контракту (fallback на 'assistant')
 const assistantRole: MessageRole = (
@@ -53,15 +51,10 @@ export class MessagesService {
       }
     });
 
-
-    const context = history.map(({ role, content }: MinimalMessage) => ({
-      role: (role as ChatRole) ?? 'user',
-      content
-
     // Используем локальный минимальный тип, чтобы не зависеть от генерации Prisma-типа в тестах
     const context = history.map((entry: MinimalMsg) => ({
       role: (entry.role as ChatRole) ?? 'user',
-      content: entry.content
+      content: entry.content ?? ''
     }));
 
     // Запрос к LLM с историей

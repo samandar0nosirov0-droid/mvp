@@ -5,13 +5,11 @@
     "moduleResolution": "Bundler",
     "declaration": true,
     "declarationMap": false,
-    "emitDeclarationOnly": true,
     "outDir": "dist",
     "strict": true,
     "skipLibCheck": true,
     "jsx": "react-jsx",
     "types": ["react", "react-dom"]
-    "types": ["react"]
   },
   "include": ["src"]
 }

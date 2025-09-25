@@ -2,11 +2,17 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "module": "ESNext",
-    "jsx": "react-jsx",
-    "moduleResolution": "Node",
+    "jsx": "preserve",
+    "moduleResolution": "Bundler",
     "types": ["node"],
     "allowJs": false
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "next.config.mjs", "tailwind.config.ts"],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "next.config.mjs",
+    "tailwind.config.ts"
+  ],
   "exclude": ["node_modules"]
 }
