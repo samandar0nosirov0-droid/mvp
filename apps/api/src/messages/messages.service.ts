@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateMessageDto } from './dto/create-message.dto';
-import { caseMessageCreateSchema, messageRoleSchema } from '@aidvokat/contracts';
+import { caseMessageCreateSchema, messageRoleSchema, MessageRole } from '@aidvokat/contracts';
 import { LlmGatewayService } from '../llm-gateway/llm-gateway.service';
 
 // Разрешённые роли для контекста LLM
@@ -14,7 +14,10 @@ type HistoryEntry = {
 };
 
 // Роль ассистента по контракту (fallback на 'assistant')
-const assistantRole = (messageRoleSchema as any)?.enum?.assistant ?? 'assistant';
+const assistantRole: MessageRole = (
+  (messageRoleSchema.options as readonly MessageRole[]).find((role) => role === 'assistant') ??
+  'assistant'
+);
 
 @Injectable()
 export class MessagesService {
