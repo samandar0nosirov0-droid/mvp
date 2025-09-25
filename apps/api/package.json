@@ -8,6 +8,7 @@
     "start": "node dist/main.js",
     "lint": "eslint src --ext .ts",
     "test": "jest --passWithNoTests",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
     "prisma:generate": "prisma generate",
     "migrate": "prisma migrate dev"
   },
