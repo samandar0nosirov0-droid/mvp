@@ -4,7 +4,17 @@ import { CreateMessageDto } from './dto/create-message.dto';
 import { caseMessageCreateSchema, messageRoleSchema } from '@aidvokat/contracts';
 import { LlmGatewayService } from '../llm-gateway/llm-gateway.service';
 
-const assistantRole = messageRoleSchema.enum.assistant ?? 'assistant';
+// Разрешённые роли для контекста LLM
+type ChatRole = 'user' | 'assistant' | 'system';
+
+// Элементы истории, которые нам нужны для контекста
+type HistoryEntry = {
+  role: string;     // Хранимое в БД значение (может быть шире)
+  content: string;
+};
+
+// Роль ассистента по контракту (fallback на 'assistant')
+const assistantRole = (messageRoleSchema as any)?.enum?.assistant ?? 'assistant';
 
 @Injectable()
 export class MessagesService {
@@ -18,7 +28,6 @@ export class MessagesService {
     if (!existingCase || existingCase.userId !== userId) {
       throw new BadRequestException('Дело не найдено или недоступно');
     }
-
     return existingCase;
   }
 
@@ -26,11 +35,13 @@ export class MessagesService {
     const parsed = caseMessageCreateSchema.parse({ ...dto, caseId });
     await this.ensureCaseOwnership(parsed.caseId, userId);
 
+    // История сообщений по делу (для контекста LLM)
     const history = await this.prisma.message.findMany({
       where: { caseId: parsed.caseId },
       orderBy: { createdAt: 'asc' }
     });
 
+    // Сохраняем пользовательское сообщение
     const userMessage = await this.prisma.message.create({
       data: {
         caseId: parsed.caseId,
@@ -41,17 +52,20 @@ export class MessagesService {
       }
     });
 
-    const context = history.map((entry) => ({
-      role: entry.role as 'user' | 'assistant' | 'system',
-      content: entry.content
+    // Явная типизация параметра entry устраняет TS7006 (implicit any)
+    const context = history.map(({ role, content }: HistoryEntry) => ({
+      role: (role as ChatRole) ?? 'user',
+      content
     }));
 
+    // Запрос к LLM с историей
     const llmResponse = await this.llmGatewayService.relayPrompt({
       prompt: parsed.content,
       locale: parsed.locale,
       context
     });
 
+    // Сообщение ассистента
     const assistantMessage = await this.prisma.message.create({
       data: {
         caseId: parsed.caseId,
